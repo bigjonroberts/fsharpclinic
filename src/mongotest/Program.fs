@@ -1,10 +1,13 @@
-﻿#if INTERACTIVE
+﻿// Add packages when working in FSI using Alt+Enter
+#if INTERACTIVE
 #r "nuget: MongoDB.Driver"
 #endif
 
+//open Namespaces - similar to importing modules in JS. same as "using" in C#
 open MongoDB.Driver
 open MongoDB.Bson
 
+// We use reflection to dump the values of any object.
 let printProperties x =
     let t = x.GetType()
     let properties = t.GetProperties()
@@ -17,8 +20,9 @@ let printProperties x =
         else
             printfn "%s: ?" prop.Name)
 
+
 let client = 
-  MongoClient()
+  MongoClient("")
 
 type Deal = {
   Id: ObjectId
@@ -31,8 +35,7 @@ let db = client.GetDatabase("braustin_crm")
 let deals = db.GetCollection<BsonDocument>("deals")
 
 let getAllDeals () =
-  let allDeals = deals.Find(fun _ -> true)
-  allDeals.ToEnumerable()
+  deals.Find(fun _ -> true).ToEnumerable()
   |> Seq.map( fun deal ->
     // deal.GetElement(2).ToString()
     let pipedriveId =
